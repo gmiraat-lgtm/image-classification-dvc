@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <title>DVC Plot</title>
+    
+
+    <script src="https://cdn.jsdelivr.net/npm/vega@5.20.2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5.2.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6.18.2"></script>
+    
+    <style>
+        table {
+            border-spacing: 15px;
+        }
+    </style>
+</head>
+<body>
+    
+    <div id = "reports_training_curve_csv">
+        <script type = "text/javascript">
+            var spec = {"$schema": "https://vega.github.io/schema/vega-lite/v5.json", "data": {"values": [{"iteration": "0", "loss": "0.9669302240250602", "rev": "workspace"}, {"iteration": "1", "loss": "0.6734274111096821", "rev": "workspace"}, {"iteration": "2", "loss": "0.6336740698133196", "rev": "workspace"}, {"iteration": "3", "loss": "0.6171439259771316", "rev": "workspace"}, {"iteration": "4", "loss": "0.602163020580534", "rev": "workspace"}, {"iteration": "5", "loss": "0.5840948638461885", "rev": "workspace"}, {"iteration": "6", "loss": "0.5902560903912499", "rev": "workspace"}]}, "title": {"text": "Training Loss Curve", "anchor": "middle"}, "width": 300, "height": 300, "params": [{"name": "smooth", "value": 0.001, "bind": {"input": "range", "min": 0.001, "max": 1, "step": 0.001}}], "encoding": {"x": {"field": "iteration", "type": "quantitative", "title": "iteration"}, "color": {"field": "rev", "scale": {"domain": ["workspace"], "range": ["#945dd6"]}}, "strokeDash": {}}, "layer": [{"layer": [{"params": [{"name": "grid", "select": "interval", "bind": "scales"}], "mark": "line"}, {"transform": [{"filter": {"param": "hover", "empty": false}}], "mark": "point"}], "encoding": {"y": {"field": "loss", "type": "quantitative", "title": "loss", "scale": {"zero": false}}, "color": {"field": "rev", "type": "nominal"}}, "transform": [{"loess": "loss", "on": "iteration", "groupby": ["rev"], "bandwidth": {"signal": "smooth"}}]}, {"mark": {"type": "line", "opacity": 0.2}, "encoding": {"x": {"field": "iteration", "type": "quantitative", "title": "iteration"}, "y": {"field": "loss", "type": "quantitative", "title": "loss", "scale": {"zero": false}}, "color": {"field": "rev", "type": "nominal"}}}, {"mark": {"type": "circle", "size": 10}, "encoding": {"x": {"aggregate": "max", "field": "iteration", "type": "quantitative", "title": "iteration"}, "y": {"aggregate": {"argmax": "iteration"}, "field": "loss", "type": "quantitative", "title": "loss", "scale": {"zero": false}}, "color": {"field": "rev", "type": "nominal"}}}, {"transform": [{"calculate": "datum.rev", "as": "pivot_field"}, {"pivot": "pivot_field", "op": "mean", "value": "loss", "groupby": ["iteration"]}], "mark": {"type": "rule", "tooltip": {"content": "data"}, "stroke": "grey"}, "encoding": {"opacity": {"condition": {"value": 0.3, "param": "hover", "empty": false}, "value": 0}}, "params": [{"name": "hover", "select": {"type": "point", "fields": ["iteration"], "nearest": true, "on": "mouseover", "clear": "mouseout"}}]}]};
+            vegaEmbed('#reports_training_curve_csv', spec);
+        </script>
+    </div>
+    
+
+        <div
+            id="reports_confusion_matrix_png"
+            style="border:1px solid black;text-align:center;
+            white-space: nowrap;overflow-y:hidden;">
+            <p>reports/confusion_matrix.png</p>
+
+                <div
+                    style="border:1px dotted black;margin:2px;display:
+                    inline-block;
+                    overflow:hidden;margin-left:8px;">
+                    <p>workspace</p>
+                    <img src="static\workspace_reports_confusion_matrix.png">
+                </div>
+                
+        </div>
+</body>
+</html>

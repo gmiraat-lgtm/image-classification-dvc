@@ -1,6 +1,8 @@
 # =====================================================================
 # dvc.yaml  -  End-to-end image-classification pipeline.
 # Run the whole thing with:  dvc repro
+# View metrics with:         dvc metrics show
+# View plots with:           dvc plots show
 # DVC re-executes a stage only when its dependencies (code / data /
 # params) change, giving reproducible, incremental runs.
 # =====================================================================
@@ -72,6 +74,12 @@ stages:
     outs:
       - models/model.joblib
       - models/history.json
+    plots:
+      - reports/training_curve.csv:
+          x: iteration
+          y: loss
+          title: Training Loss Curve
+          cache: false
 
   model_evaluation:
     cmd: python src/model_evaluation.py
@@ -86,5 +94,9 @@ stages:
     metrics:
       - reports/metrics.json:
           cache: false
+    plots:
+      - reports/confusion_matrix.png:
+          cache: false
     outs:
-      - reports/confusion_matrix.png
+      - reports/predictions.csv:
+          cache: false

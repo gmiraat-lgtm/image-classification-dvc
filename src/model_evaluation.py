@@ -2,15 +2,16 @@
 Stage 5 - Model Evaluation
 --------------------------
 Loads the trained model and the held-out test set, computes accuracy and a
-full per-class classification report, and saves both a metrics JSON and a
-confusion-matrix image.
+full per-class classification report, and saves a metrics JSON, a
+confusion-matrix image, and a predictions CSV (for DVC plots).
 
 Input : models/model.joblib (or model.keras), data/features/X_test.npy,
         data/processed/y_test.npy
-Output: reports/metrics.json, reports/confusion_matrix.png
+Output: reports/metrics.json, reports/confusion_matrix.png,
+        reports/predictions.csv
 """
+import csv
 import json
-import os
 
 import numpy as np
 import matplotlib
@@ -61,6 +62,14 @@ def main():
     with open(ev["metrics_path"], "w") as f:
         json.dump(metrics, f, indent=2)
 
+    # Predictions CSV (true vs predicted) for DVC plots
+    ensure_dir("reports/predictions.csv")
+    with open("reports/predictions.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["actual", "predicted"])
+        for a, p in zip(y_test, y_pred):
+            writer.writerow([int(a), int(p)])
+
     # Confusion matrix figure
     cm = confusion_matrix(y_test, y_pred)
     fig, ax = plt.subplots(figsize=(7, 6))
@@ -84,7 +93,7 @@ def main():
 
     log("model_evaluation",
         f"Accuracy={acc:.4f}, Macro-F1={macro_f1:.4f} | "
-        f"metrics -> {ev['metrics_path']}, figure -> {ev['confusion_matrix_path']}")
+        f"metrics -> {ev['metrics_path']}, predictions -> reports/predictions.csv")
 
 
 if __name__ == "__main__":

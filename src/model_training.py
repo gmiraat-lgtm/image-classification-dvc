@@ -12,15 +12,28 @@ are supported (chosen in params.yaml -> model_training.framework):
                           parameters natively (learning_rate, optimizer,
                           dropout_rate, batch_size, epochs).
 
+Also writes reports/training_curve.csv (per-iteration loss) for DVC plots.
+
 Input : data/features/{X_train,X_val}.npy, data/processed/{y_train,y_val}.npy
-Output: models/model.joblib   (+ models/history.json)
+Output: models/model.joblib   (+ models/history.json, reports/training_curve.csv)
 """
+import csv
 import json
 
 import joblib
 import numpy as np
 
 from utils import load_params, ensure_dir, log
+
+
+def save_training_curve(losses):
+    """Write per-iteration loss to a CSV that DVC can render as a plot."""
+    ensure_dir("reports/training_curve.csv")
+    with open("reports/training_curve.csv", "w", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["iteration", "loss"])
+        for i, loss in enumerate(losses):
+            writer.writerow([i, float(loss)])
 
 
 def train_sklearn(X_train, y_train, X_val, y_val, cfg, seed):
@@ -41,6 +54,10 @@ def train_sklearn(X_train, y_train, X_val, y_val, cfg, seed):
         verbose=False,
     )
     model.fit(X_train, y_train)
+
+    # Per-iteration loss curve for DVC plots
+    save_training_curve(model.loss_curve_)
+
     history = {
         "framework": "sklearn",
         "train_accuracy": float(model.score(X_train, y_train)),
@@ -75,6 +92,10 @@ def train_keras(X_train, y_train, X_val, y_val, cfg, seed, n_classes):
         epochs=cfg["epochs"], batch_size=cfg["batch_size"],
         callbacks=callbacks, verbose=0,
     )
+
+    # Per-epoch loss curve for DVC plots
+    save_training_curve(hist.history["loss"])
+
     history = {
         "framework": "keras",
         "train_accuracy": float(hist.history["accuracy"][-1]),

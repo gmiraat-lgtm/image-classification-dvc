@@ -144,8 +144,8 @@ stages:
       size: 9728
     - path: src/model_training.py
       hash: md5
-      md5: d1a1afeabecd9212b1f0fc6b6559dc52
-      size: 4449
+      md5: a3e79aef551e476be05aea1b7cd577c5
+      size: 5130
     - path: src/utils.py
       hash: md5
       md5: 949d91f0070dff24432a83d2b78bddca
@@ -171,6 +171,10 @@ stages:
       hash: md5
       md5: 5e44964dfe862d23d7623887ec75f4d6
       size: 270229
+    - path: reports/training_curve.csv
+      hash: md5
+      md5: 2a3d8a273fb0914200dfa3cb629dbee0
+      size: 169
   model_evaluation:
     cmd: python src/model_evaluation.py
     deps:
@@ -188,8 +192,8 @@ stages:
       size: 270229
     - path: src/model_evaluation.py
       hash: md5
-      md5: 3034583d998005c59be280246cbe83de
-      size: 3016
+      md5: ff2ba3be9bcb0ef423c548e0b8603462
+      size: 3409
     - path: src/utils.py
       hash: md5
       md5: 949d91f0070dff24432a83d2b78bddca
@@ -208,3 +212,7 @@ stages:
       hash: md5
       md5: 20c21702a5f344989d91de315f1faaac
       size: 438
+    - path: reports/predictions.csv
+      hash: md5
+      md5: cc1f886cf69749b8e112643f6e8c8383
+      size: 6018
