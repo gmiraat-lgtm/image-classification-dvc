@@ -1,0 +1,210 @@
+schema: '2.0'
+stages:
+  data_collection:
+    cmd: python src/data_collection.py
+    deps:
+    - path: data/raw/fashion-mnist_train.csv
+      hash: md5
+      md5: 976229da8a00a3ccf41b8009e4e48d77
+      size: 133047193
+    - path: src/data_collection.py
+      hash: md5
+      md5: 4cc71046502cc328cea6df263e8f7705
+      size: 1310
+    - path: src/utils.py
+      hash: md5
+      md5: 949d91f0070dff24432a83d2b78bddca
+      size: 689
+    params:
+      params.yaml:
+        base.random_state: 42
+        data_collection.sample_size: 8000
+        data_collection.shuffle: true
+    outs:
+    - path: data/collected/dataset.csv
+      hash: md5
+      md5: 7e3d01958307b19decf7c275fbc410a0
+      size: 17768658
+  data_processing:
+    cmd: python src/data_processing.py
+    deps:
+    - path: data/collected/dataset.csv
+      hash: md5
+      md5: 7e3d01958307b19decf7c275fbc410a0
+      size: 17768658
+    - path: src/data_processing.py
+      hash: md5
+      md5: cba1280ac75969d657352968ef17ec0a
+      size: 2994
+    - path: src/utils.py
+      hash: md5
+      md5: 949d91f0070dff24432a83d2b78bddca
+      size: 689
+    params:
+      params.yaml:
+        data_processing.augmentation:
+          enabled: false
+          rotation: 10
+          zoom: 0.1
+        data_processing.normalize: true
+        data_processing.test_split: 0.15
+        data_processing.validation_split: 0.15
+    outs:
+    - path: data/processed/X_test.npy
+      hash: md5
+      md5: fc1a778e25a74146509b2a9d715286b9
+      size: 3763328
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: ff9f4580f622387fd857ddcb6905d3b6
+      size: 17561728
+    - path: data/processed/X_val.npy
+      hash: md5
+      md5: ea4710f7bbdf9535db8f3785618dbac2
+      size: 3763328
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: 4f0020f1cc0d9c1ea353cc8e2423d192
+      size: 9728
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: e7aa613eee9c9ad84a41a0caad0b7355
+      size: 44928
+    - path: data/processed/y_val.npy
+      hash: md5
+      md5: 5aac88e965c566404aed95d26bc98aeb
+      size: 9728
+  feature_selection:
+    cmd: python src/feature_selection.py
+    deps:
+    - path: data/processed/X_test.npy
+      hash: md5
+      md5: fc1a778e25a74146509b2a9d715286b9
+      size: 3763328
+    - path: data/processed/X_train.npy
+      hash: md5
+      md5: ff9f4580f622387fd857ddcb6905d3b6
+      size: 17561728
+    - path: data/processed/X_val.npy
+      hash: md5
+      md5: ea4710f7bbdf9535db8f3785618dbac2
+      size: 3763328
+    - path: src/feature_selection.py
+      hash: md5
+      md5: dfa5c3d4d3cc99ec497af7aa5adc5102
+      size: 2668
+    - path: src/utils.py
+      hash: md5
+      md5: 949d91f0070dff24432a83d2b78bddca
+      size: 689
+    params:
+      params.yaml:
+        feature_selection.method: pca
+        feature_selection.n_components: 100
+        feature_selection.variance_threshold: 0.0
+    outs:
+    - path: data/features/X_test.npy
+      hash: md5
+      md5: 17bc1a448114e9f0353edfe768b8fd56
+      size: 480128
+    - path: data/features/X_train.npy
+      hash: md5
+      md5: c12c7b8dc56f7a298e75c2deee0c823a
+      size: 2240128
+    - path: data/features/X_val.npy
+      hash: md5
+      md5: 4c5b3acd85271b7e0586a5da1868c5f6
+      size: 480128
+    - path: data/features/feature_report.json
+      hash: md5
+      md5: 5d910c91ac47742ab18e8babf35ad448
+      size: 131
+    - path: data/features/selector.joblib
+      hash: md5
+      md5: 86bc32b51ec69718cfad88f917247269
+      size: 318858
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+    - path: data/features/X_train.npy
+      hash: md5
+      md5: c12c7b8dc56f7a298e75c2deee0c823a
+      size: 2240128
+    - path: data/features/X_val.npy
+      hash: md5
+      md5: 4c5b3acd85271b7e0586a5da1868c5f6
+      size: 480128
+    - path: data/processed/y_train.npy
+      hash: md5
+      md5: e7aa613eee9c9ad84a41a0caad0b7355
+      size: 44928
+    - path: data/processed/y_val.npy
+      hash: md5
+      md5: 5aac88e965c566404aed95d26bc98aeb
+      size: 9728
+    - path: src/model_training.py
+      hash: md5
+      md5: d1a1afeabecd9212b1f0fc6b6559dc52
+      size: 4449
+    - path: src/utils.py
+      hash: md5
+      md5: 949d91f0070dff24432a83d2b78bddca
+      size: 689
+    params:
+      params.yaml:
+        model_training:
+          framework: sklearn
+          learning_rate: 0.01
+          batch_size: 64
+          epochs: 30
+          optimizer: adam
+          hidden_units: 128
+          dropout_rate: 0.2
+          early_stopping: true
+          model_path: models/model.joblib
+    outs:
+    - path: models/history.json
+      hash: md5
+      md5: 24aa2a31e37e913da983f778d5677a68
+      size: 132
+    - path: models/model.joblib
+      hash: md5
+      md5: 5e44964dfe862d23d7623887ec75f4d6
+      size: 270229
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+    - path: data/features/X_test.npy
+      hash: md5
+      md5: 17bc1a448114e9f0353edfe768b8fd56
+      size: 480128
+    - path: data/processed/y_test.npy
+      hash: md5
+      md5: 4f0020f1cc0d9c1ea353cc8e2423d192
+      size: 9728
+    - path: models/model.joblib
+      hash: md5
+      md5: 5e44964dfe862d23d7623887ec75f4d6
+      size: 270229
+    - path: src/model_evaluation.py
+      hash: md5
+      md5: 3034583d998005c59be280246cbe83de
+      size: 3016
+    - path: src/utils.py
+      hash: md5
+      md5: 949d91f0070dff24432a83d2b78bddca
+      size: 689
+    params:
+      params.yaml:
+        model_evaluation:
+          metrics_path: reports/metrics.json
+          confusion_matrix_path: reports/confusion_matrix.png
+    outs:
+    - path: reports/confusion_matrix.png
+      hash: md5
+      md5: 0021d1efa6d7601b521af8d39d58ee02
+      size: 40343
+    - path: reports/metrics.json
+      hash: md5
+      md5: 20c21702a5f344989d91de315f1faaac
+      size: 438
