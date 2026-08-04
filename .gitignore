@@ -1,0 +1,12 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# DVC-managed outputs (tracked by DVC, not git)
+/data/collected
+/data/processed
+/data/features
+/models
+/reports/confusion_matrix.png

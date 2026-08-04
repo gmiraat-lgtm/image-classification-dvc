@@ -1,0 +1,50 @@
+# =====================================================================
+# params.yaml  -  Central configuration for the image-classification
+# DVC pipeline. Every stage reads its parameters from this file, so the
+# whole experiment is tunable from one place (no code edits required).
+# =====================================================================
+
+base:
+  random_state: 42                       # global seed for reproducibility
+  raw_data: data/raw/fashion-mnist_train.csv
+  n_classes: 10
+
+# --- Stage 1: Data Collection ----------------------------------------
+data_collection:
+  sample_size: 8000                      # rows sampled from the raw CSV (speed vs. accuracy)
+  shuffle: true                          # shuffle before sampling
+  collected_path: data/collected/dataset.csv
+
+# --- Stage 2: Data Processing ----------------------------------------
+data_processing:
+  image_size: 28                         # images are 28 x 28
+  normalize: true                        # scale pixel values to [0, 1]
+  validation_split: 0.15                 # fraction held out for validation
+  test_split: 0.15                       # fraction held out for testing
+  augmentation:
+    enabled: false                       # toggle simple augmentation
+    rotation: 10                         # max rotation (degrees) when enabled
+    zoom: 0.10                           # max zoom fraction when enabled
+
+# --- Stage 3: Feature Selection --------------------------------------
+feature_selection:
+  method: pca                            # "pca" or "variance"
+  variance_threshold: 0.0                # drop pixels with variance <= this value
+  n_components: 100                      # PCA components kept (feature dimensionality)
+
+# --- Stage 4: Model Training -----------------------------------------
+model_training:
+  framework: sklearn                     # "sklearn" (default, no GPU) or "keras"
+  learning_rate: 0.01                    # optimizer learning rate
+  batch_size: 64                         # mini-batch size
+  epochs: 30                             # training iterations (max_iter for sklearn)
+  optimizer: adam                        # "adam" or "sgd"
+  hidden_units: 128                      # neurons in the first hidden layer
+  dropout_rate: 0.20                     # dropout (keras) / regularisation strength
+  early_stopping: true                   # stop when validation stops improving
+  model_path: models/model.joblib
+
+# --- Stage 5: Model Evaluation ---------------------------------------
+model_evaluation:
+  metrics_path: reports/metrics.json
+  confusion_matrix_path: reports/confusion_matrix.png

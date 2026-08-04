@@ -1,0 +1,90 @@
+# =====================================================================
+# dvc.yaml  -  End-to-end image-classification pipeline.
+# Run the whole thing with:  dvc repro
+# DVC re-executes a stage only when its dependencies (code / data /
+# params) change, giving reproducible, incremental runs.
+# =====================================================================
+
+stages:
+
+  data_collection:
+    cmd: python src/data_collection.py
+    deps:
+      - src/data_collection.py
+      - src/utils.py
+      - data/raw/fashion-mnist_train.csv
+    params:
+      - base.random_state
+      - data_collection.sample_size
+      - data_collection.shuffle
+    outs:
+      - data/collected/dataset.csv
+
+  data_processing:
+    cmd: python src/data_processing.py
+    deps:
+      - src/data_processing.py
+      - src/utils.py
+      - data/collected/dataset.csv
+    params:
+      - data_processing.normalize
+      - data_processing.validation_split
+      - data_processing.test_split
+      - data_processing.augmentation
+    outs:
+      - data/processed/X_train.npy
+      - data/processed/X_val.npy
+      - data/processed/X_test.npy
+      - data/processed/y_train.npy
+      - data/processed/y_val.npy
+      - data/processed/y_test.npy
+
+  feature_selection:
+    cmd: python src/feature_selection.py
+    deps:
+      - src/feature_selection.py
+      - src/utils.py
+      - data/processed/X_train.npy
+      - data/processed/X_val.npy
+      - data/processed/X_test.npy
+    params:
+      - feature_selection.method
+      - feature_selection.variance_threshold
+      - feature_selection.n_components
+    outs:
+      - data/features/X_train.npy
+      - data/features/X_val.npy
+      - data/features/X_test.npy
+      - data/features/selector.joblib
+      - data/features/feature_report.json
+
+  model_training:
+    cmd: python src/model_training.py
+    deps:
+      - src/model_training.py
+      - src/utils.py
+      - data/features/X_train.npy
+      - data/features/X_val.npy
+      - data/processed/y_train.npy
+      - data/processed/y_val.npy
+    params:
+      - model_training
+    outs:
+      - models/model.joblib
+      - models/history.json
+
+  model_evaluation:
+    cmd: python src/model_evaluation.py
+    deps:
+      - src/model_evaluation.py
+      - src/utils.py
+      - models/model.joblib
+      - data/features/X_test.npy
+      - data/processed/y_test.npy
+    params:
+      - model_evaluation
+    metrics:
+      - reports/metrics.json:
+          cache: false
+    outs:
+      - reports/confusion_matrix.png
