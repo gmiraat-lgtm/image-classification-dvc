@@ -30,7 +30,7 @@ data_processing:
 feature_selection:
   method: pca                            # "pca" or "variance"
   variance_threshold: 0.0                # drop pixels with variance <= this value
-  n_components: 100                      # PCA components kept (feature dimensionality)
+  n_components: 150                      # PCA components kept (feature dimensionality)
 
 # --- Stage 4: Model Training -----------------------------------------
 model_training:
