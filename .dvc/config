@@ -1,4 +1,6 @@
 [core]
-    remote = localstorage
+    remote = s3remote
 ['remote "localstorage"']
     url = ../../dvc-storage
+['remote "s3remote"']
+    url = s3://image-classification-dvc-23070126073/dvcstore
