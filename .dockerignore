@@ -1,0 +1,17 @@
+# .dockerignore - keep the build context small; the Dockerfile copies
+# only the serving code and the pulled pipeline artefacts.
+.git
+.github
+.dvc/cache
+.dvc/tmp
+venv
+.venv
+__pycache__
+*.pyc
+.pytest_cache
+data/raw
+data/collected
+dvc_plots
+*.pdf
+*.docx
+*.zip
